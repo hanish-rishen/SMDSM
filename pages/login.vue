@@ -16,7 +16,22 @@
         <UFormGroup label="Password" name="password">
           <UInput v-model="formState.password" type="password" placeholder="Enter your password" />
         </UFormGroup>
-        <UButton type="submit" color="primary" block class="mt-6" :loading="loading">Log In</UButton>
+        <UButton 
+          type="submit" 
+          :class="['mt-6 transition-all duration-300 ease-in-out w-full', 
+                   loginError ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-primary hover:bg-primary-dark text-white']"
+          :loading="loading"
+        >
+          <template v-if="!loading">
+            <div class="flex items-center justify-center">
+              <UIcon name="i-heroicons-lock-closed" class="w-5 h-5 mr-2" />
+              <span class="text-center">Log In</span>
+            </div>
+          </template>
+        </UButton>
+        <p v-if="loginError" class="text-red-500 text-center mt-2">
+          Invalid email or password. Please try again.
+        </p>
       </UForm>
     </UCard>
   </div>
@@ -32,6 +47,7 @@ const { setUser } = useAuth()
 const router = useRouter()
 
 const loading = ref(false)
+const loginError = ref(false)
 
 const formState = ref({
   email: '',
@@ -40,6 +56,7 @@ const formState = ref({
 
 const onSubmit = async () => {
   loading.value = true
+  loginError.value = false
   try {
     const { data, error } = await supabase.auth.signInWithPassword({
       email: formState.value.email,
@@ -50,7 +67,7 @@ const onSubmit = async () => {
     router.push('/dashboard')
   } catch (error) {
     console.error('Error logging in:', error)
-    // Handle error (show error message to user)
+    loginError.value = true
   } finally {
     loading.value = false
   }
@@ -177,5 +194,27 @@ body {
   margin: 0;
   background-color: #000;
   overflow: hidden;
+}
+
+.bg-primary {
+  background-color: #3498db;
+}
+
+.bg-primary-dark {
+  background-color: #2980b9;
+}
+
+.bg-red-500 {
+  background-color: #e74c3c;
+}
+
+.bg-red-600 {
+  background-color: #c0392b;
+}
+
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
 }
 </style>

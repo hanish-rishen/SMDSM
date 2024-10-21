@@ -2,8 +2,7 @@
   <div class="app-container">
     <Navbar v-if="user" />
     <main class="main-content">
-      <LoginPage v-if="!user" />
-      <NuxtPage v-else :key="$route.fullPath" />
+      <NuxtPage :key="$route.fullPath" />
     </main>
   </div>
 </template>
